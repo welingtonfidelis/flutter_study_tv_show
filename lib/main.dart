@@ -77,7 +77,7 @@ class _MainAppState extends State<MainApp> {
       ),
     );
 
-    void _changeThemeMode() {
+    void changeThemeMode() {
       setState(() {
         themeModeIsLight = !themeModeIsLight;
       });
@@ -99,7 +99,7 @@ class _MainAppState extends State<MainApp> {
                   themeModeIsLight ? Icons.light_mode : Icons.dark_mode,
                 ),
                 tooltip: 'Tema',
-                onPressed: _changeThemeMode,
+                onPressed: changeThemeMode,
               ),
             ],
           ),
