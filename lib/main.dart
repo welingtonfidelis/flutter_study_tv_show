@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tv_show_data/tv_show_card.dart';
+import 'package:tv_show_data/add_tv_show_screen.dart';
+import 'package:tv_show_data/custom_drawer.dart';
 import 'package:tv_show_data/tv_show_data.dart';
+import 'package:tv_show_data/tv_show_model.dart';
+import 'package:tv_show_data/tv_show_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -15,7 +18,39 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool themeModeIsLight = true;
+  final List<TvShow> tvShows = favTvShowList;
+
+  // screen control
+  int currentScreenIndex = 0;
+  List<Widget> get screens => [
+    TvShowScreen(tvShows: tvShows),
+    AddTvShowScreen(
+      addNewTvShow: addNewTvShow,
+      backToHome: () {
+        switchScreen(0);
+      },
+    ),
+  ];
+  void switchScreen(int index) {
+    setState(() {
+      currentScreenIndex = index;
+    });
+  }
+
+  // theme Control
+  bool themeModeIsDark = false;
+  void switchThemeMode() {
+    setState(() {
+      themeModeIsDark = !themeModeIsDark;
+    });
+  }
+
+  // data control
+  void addNewTvShow(TvShow newTvShow) {
+    setState(() {
+      tvShows.add(newTvShow);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +79,7 @@ class _MainAppState extends State<MainApp> {
           color: colorSchema.onPrimary,
           fontFamily: GoogleFonts.lobster().fontFamily,
         ),
+        iconTheme: IconThemeData(color: colorSchema.onPrimary, size: 36),
       ),
       cardTheme: CardThemeData(
         color: colorSchema.secondaryContainer,
@@ -67,6 +103,7 @@ class _MainAppState extends State<MainApp> {
           color: colorSchemaDark.primary,
           fontFamily: GoogleFonts.lobster().fontFamily,
         ),
+        iconTheme: IconThemeData(color: colorSchemaDark.primary, size: 36),
       ),
       cardTheme: CardThemeData(
         color: colorSchemaDark.secondaryContainer,
@@ -77,44 +114,24 @@ class _MainAppState extends State<MainApp> {
       ),
     );
 
-    void changeThemeMode() {
-      setState(() {
-        themeModeIsLight = !themeModeIsLight;
-      });
-    }
-
     return MaterialApp(
       theme: customTheme,
       darkTheme: customThemeDark,
-      themeMode: themeModeIsLight ? ThemeMode.light : ThemeMode.dark,
+      themeMode: themeModeIsDark ? ThemeMode.dark : ThemeMode.light,
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Eu Amo Séries'),
-              IconButton(
-                icon: Icon(
-                  themeModeIsLight ? Icons.light_mode : Icons.dark_mode,
-                ),
-                tooltip: 'Tema',
-                onPressed: changeThemeMode,
-              ),
-            ],
+            children: [Text('Eu Amo Séries')],
           ),
         ),
-        //   body: ListView(
-        //     children: [
-        //       ...favTvShowList.map((tvShow) => TvShowCard(tvShow: tvShow)),
-        //     ],
-        //   ),
-        // ),
-        body: ListView.builder(
-          itemBuilder: (context, index) =>
-              TvShowCard(tvShow: favTvShowList[index], index: index),
-          itemCount: favTvShowList.length,
+        drawer: CustomDrawer(
+          switchThemeMode: switchThemeMode,
+          themeModeIsDark: themeModeIsDark,
+          switchScreen: switchScreen,
         ),
+        body: screens[currentScreenIndex],
       ),
     );
   }
