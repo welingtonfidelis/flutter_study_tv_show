@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tv_show_data/star_rating.dart';
 import 'package:tv_show_data/tv_show_model.dart';
 
 class AddTvShowScreen extends StatefulWidget {
-  const AddTvShowScreen({
-    super.key,
-    required this.addNewTvShow,
-    required this.backToHome,
-  });
+  const AddTvShowScreen({super.key, required this.backToHome});
 
-  final Function(TvShow value) addNewTvShow;
   final Function() backToHome;
 
   @override
@@ -25,6 +21,9 @@ class _AddTvShowScreenState extends State<AddTvShowScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var model = Provider.of<TvShowModel>(context, listen: false);
+    // var model = context.read<TvShowModel>();
+
     void submit() {
       if (formKey.currentState!.validate()) {
         final newTvShow = TvShow(
@@ -34,8 +33,19 @@ class _AddTvShowScreenState extends State<AddTvShowScreen> {
           summary: summaryController.text,
         );
 
-        widget.addNewTvShow(newTvShow);
+        model.addNewTvShow(newTvShow);
         widget.backToHome();
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${newTvShow.title} adicionado',
+              textAlign: TextAlign.center,
+            ),
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
     }
 

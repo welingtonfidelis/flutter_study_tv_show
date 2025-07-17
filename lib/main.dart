@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:tv_show_data/add_tv_show_screen.dart';
 import 'package:tv_show_data/custom_drawer.dart';
 import 'package:tv_show_data/tv_show_data.dart';
@@ -7,7 +8,12 @@ import 'package:tv_show_data/tv_show_model.dart';
 import 'package:tv_show_data/tv_show_screen.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TvShowModel(),
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatefulWidget {
@@ -23,9 +29,8 @@ class _MainAppState extends State<MainApp> {
   // screen control
   int currentScreenIndex = 0;
   List<Widget> get screens => [
-    TvShowScreen(tvShows: tvShows),
+    TvShowScreen(),
     AddTvShowScreen(
-      addNewTvShow: addNewTvShow,
       backToHome: () {
         switchScreen(0);
       },
@@ -42,13 +47,6 @@ class _MainAppState extends State<MainApp> {
   void switchThemeMode() {
     setState(() {
       themeModeIsDark = !themeModeIsDark;
-    });
-  }
-
-  // data control
-  void addNewTvShow(TvShow newTvShow) {
-    setState(() {
-      tvShows.add(newTvShow);
     });
   }
 

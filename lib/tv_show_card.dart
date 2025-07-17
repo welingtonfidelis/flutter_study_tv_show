@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:tv_show_data/rating_widget.dart';
 import 'package:tv_show_data/tv_show_model.dart';
 
@@ -12,6 +13,26 @@ class TvShowCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var colorSchema = Theme.of(context).colorScheme;
+    var model = context.read<TvShowModel>();
+
+    void handleRemoveTvShow() {
+      model.removeTvShow(tvShow);
+      Navigator.of(context).pop();
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${tvShow.title} removido'),
+          duration: Duration(seconds: 4),
+          action: SnackBarAction(
+            label: 'DEFAZER',
+            onPressed: () {
+              model.addNewTvShowOnIndex(tvShow, index);
+            },
+          ),
+        ),
+      );
+    }
 
     return Card(
       child: ListTile(
@@ -53,12 +74,26 @@ class TvShowCard extends StatelessWidget {
               ),
               actions: [
                 ElevatedButton(
+                  onPressed: handleRemoveTvShow,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorSchema.onError,
+                    // foregroundColor: colorSchema.onPrimary,
+                  ),
+                  child: Text(
+                    'Remover',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorSchema.primary,
                     foregroundColor: colorSchema.onPrimary,
                   ),
-                  child: Text('Fechar', style: TextStyle(fontWeight: FontWeight.bold),),
+                  child: Text(
+                    'Fechar',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
